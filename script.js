@@ -3,6 +3,10 @@ const modal = document.querySelector('.modal');
 const overlay = document.querySelector('.overlay');
 const section1 = document.getElementById('section--1');
 const header = document.querySelector('.header');
+const nav = document.querySelector('.nav');
+const tabs = document.querySelectorAll('.operations__tab');
+const tabsContainer = document.querySelector('.operations__tab-container');
+const tabsContent = document.querySelectorAll('.operations__content');
 
 // Buttons
 const btnShowModal = document.querySelectorAll('.btn--show-modal');
@@ -17,6 +21,20 @@ const showModal = function (e) {
 const closeModal = function () {
   modal.classList.add('hidden');
   overlay.classList.add('hidden');
+};
+
+// Function for link hover animation
+const handleHover = function (e, opacity) {
+  if (e.target.classList.contains('nav__link')) {
+    const clicked = e.target;
+    const sibling = clicked.closest('.nav').querySelectorAll('.nav__link');
+    const logo = clicked.closest('.nav').querySelector('.nav__logo');
+
+    sibling.forEach(value => {
+      if (value !== clicked) value.style.opacity = this;
+    });
+    logo.style.opacity = this;
+  }
 };
 
 // Event listeners for the modal button
@@ -54,10 +72,6 @@ document.querySelector('.nav__links').addEventListener('click', function (e) {
 });
 
 // Builidng the tabbed components
-const tabs = document.querySelectorAll('.operations__tab');
-const tabsContainer = document.querySelector('.operations__tab-container');
-const tabsContent = document.querySelectorAll('.operations__content');
-
 tabsContainer.addEventListener('click', function (e) {
   const clicked = e.target.closest('.operations__tab');
   // Guard clause
@@ -74,4 +88,17 @@ tabsContainer.addEventListener('click', function (e) {
   document
     .querySelector(`.operations__content--${clicked.dataset.tab}`)
     .classList.add('operations__content--active');
+});
+
+// Menu fade animation eVENT Listener
+
+nav.addEventListener('mouseover', handleHover.bind(0.5));
+nav.addEventListener('mouseout', handleHover.bind(1));
+
+// Sticky navigation
+const sec1coords = section1.getBoundingClientRect();
+console.log(sec1coords.top);
+window.addEventListener('scroll', function (e) {
+  if (window.scrollY > sec1coords.top) nav.classList.add('sticky');
+  else nav.classList.remove('sticky');
 });
