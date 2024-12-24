@@ -7,6 +7,7 @@ const nav = document.querySelector('.nav');
 const tabs = document.querySelectorAll('.operations__tab');
 const tabsContainer = document.querySelector('.operations__tab-container');
 const tabsContent = document.querySelectorAll('.operations__content');
+const allSections = document.querySelectorAll('.section');
 
 // Buttons
 const btnShowModal = document.querySelectorAll('.btn--show-modal');
@@ -24,7 +25,7 @@ const closeModal = function () {
 };
 
 // Function for link hover animation
-const handleHover = function (e, opacity) {
+const handleHover = function (e) {
   if (e.target.classList.contains('nav__link')) {
     const clicked = e.target;
     const sibling = clicked.closest('.nav').querySelectorAll('.nav__link');
@@ -62,6 +63,11 @@ btnScrollTo.addEventListener('click', function (e) {
   section1.scrollIntoView({ behavior: 'smooth' });
 });
 
+document.querySelector('#logo').addEventListener('click', function (e) {
+  e.preventDefault();
+  header.scrollIntoView({ behavior: 'smooth' });
+});
+
 // Smooth Scrolling Page Navigation
 document.querySelector('.nav__links').addEventListener('click', function (e) {
   e.preventDefault();
@@ -97,8 +103,73 @@ nav.addEventListener('mouseout', handleHover.bind(1));
 
 // Sticky navigation
 const sec1coords = section1.getBoundingClientRect();
-console.log(sec1coords.top);
-window.addEventListener('scroll', function (e) {
-  if (window.scrollY > sec1coords.top) nav.classList.add('sticky');
-  else nav.classList.remove('sticky');
+// const sec2coords = document
+//   .querySelector('#section--2')
+//   .getBoundingClientRect();
+// const sec3coords = document
+//   .querySelector('#section--3')
+//   .getBoundingClientRect();
+
+// console.log(sec1coords.top);
+
+//Normal sticky animation
+// window.addEventListener('scroll', function (e) {
+//   if (window.scrollY >= sec1coords.top) {
+//     nav.classList.add('sticky');
+//   } else nav.classList.remove('sticky');
+// });
+
+// Using the Intersection Observer API
+const navHeight = nav.getBoundingClientRect().height;
+
+const stickyNav = function (entries) {
+  const [entry] = entries;
+  if (!entry.isIntersecting) {
+    nav.classList.add('sticky');
+  } else nav.classList.remove('sticky');
+};
+const headerObserver = new IntersectionObserver(stickyNav, {
+  root: null,
+  threshold: 0,
+  rootMargin: `-${navHeight}px`,
+});
+headerObserver.observe(header);
+
+// Reveal Sections
+const revealSection = function (entries, observer) {
+  entries.map(value => {
+    if (!value.isIntersecting) return;
+    value.target.classList.remove('section--hidden');
+    observer.unobserve(value.target);
+  });
+};
+const sectionObersever = new IntersectionObserver(revealSection, {
+  root: null,
+  threshold: 0.15,
+});
+allSections.forEach(value => {
+  sectionObersever.observe(value);
+  value.classList.add('section--hidden');
+});
+
+// Revealing lazy loading images for performances
+
+const allLazyLoadingImages = document.querySelectorAll('img[data-src]');
+const revealLazyImages = function (entries, observer) {
+  const [entry] = entries;
+  if (entry.isIntersecting) {
+    entry.target.src = entry.target.dataset.src;
+    entry.target.addEventListener('load', function () {
+      entry.target.classList.remove('lazy-img');
+    });
+  } else return;
+};
+
+const lazyImagesObserver = new IntersectionObserver(revealLazyImages, {
+  root: null,
+  threshold: 0.15,
+});
+
+allLazyLoadingImages.forEach(value => {
+  lazyImagesObserver.observe(value);
 });
