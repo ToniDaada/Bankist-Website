@@ -162,12 +162,13 @@ const revealLazyImages = function (entries, observer) {
     entry.target.addEventListener('load', function () {
       entry.target.classList.remove('lazy-img');
     });
+    observer.unobserve(entry.target);
   } else return;
 };
 
 const lazyImagesObserver = new IntersectionObserver(revealLazyImages, {
   root: null,
-  threshold: 0.15,
+  threshold: 0,
 });
 
 allLazyLoadingImages.forEach(value => {
