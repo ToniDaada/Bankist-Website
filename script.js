@@ -156,21 +156,55 @@ allSections.forEach(value => {
 
 const allLazyLoadingImages = document.querySelectorAll('img[data-src]');
 const revealLazyImages = function (entries, observer) {
-  const [entry] = entries;
-  if (entry.isIntersecting) {
+  entries.map(entry => {
+    if (!entry.isIntersecting) return;
     entry.target.src = entry.target.dataset.src;
     entry.target.addEventListener('load', function () {
       entry.target.classList.remove('lazy-img');
     });
     observer.unobserve(entry.target);
-  } else return;
+  });
 };
 
 const lazyImagesObserver = new IntersectionObserver(revealLazyImages, {
   root: null,
   threshold: 0,
+  rootMargin: '200px',
 });
 
-allLazyLoadingImages.forEach(value => {
-  lazyImagesObserver.observe(value);
-});
+allLazyLoadingImages.forEach(value => lazyImagesObserver.observe(value));
+
+// Working on the slider
+const slides = document.querySelectorAll('.slide');
+const slider = document.querySelector('.slider');
+const btnSliderLeft = document.querySelector('.slider__btn--left');
+const btnSliderRight = document.querySelector('.slider__btn--right');
+let currentSlide = 0;
+const maxSlide = slides.length;
+
+// Function that makes the slide go to the right slides
+const goToSlide = function (slide) {
+  slides.forEach((value, index, arr) => {
+    value.style.transform = `translateX(${(index - slide) * 100}%)`;
+  });
+};
+
+// This is to make sure the slides always start at the first slide
+goToSlide(0);
+
+const nextSlide = function () {
+  if (currentSlide === maxSlide - 1) {
+    currentSlide = 0;
+  } else currentSlide++;
+  goToSlide(currentSlide);
+};
+const prevSlide = function () {
+  if (currentSlide > 0) {
+    currentSlide--;
+  }
+  goToSlide(currentSlide);
+};
+
+// The event listener for the button right slider
+btnSliderRight.addEventListener('click', nextSlide);
+btnSliderLeft.addEventListener('click', prevSlide);
