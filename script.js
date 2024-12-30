@@ -178,7 +178,7 @@ allLazyLoadingImages.forEach(value => lazyImagesObserver.observe(value));
 // I created a function so as not to pollute the global namespace
 const sliderFunction = function () {
   const slides = document.querySelectorAll('.slide');
-  const slider = document.querySelector('.slider');
+
   const btnSliderLeft = document.querySelector('.slider__btn--left');
   const btnSliderRight = document.querySelector('.slider__btn--right');
   let currentSlide = 0;
@@ -258,3 +258,8 @@ const sliderFunction = function () {
 };
 
 sliderFunction();
+
+window.addEventListener('beforeunload', function (e) {
+  e.preventDefault();
+  console.log(e);
+});
