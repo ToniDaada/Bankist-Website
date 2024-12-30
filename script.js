@@ -182,6 +182,27 @@ const btnSliderRight = document.querySelector('.slider__btn--right');
 let currentSlide = 0;
 const maxSlide = slides.length;
 
+const dotContainer = document.querySelector('.dots');
+const createDots = function () {
+  slides.forEach(function (_, index) {
+    dotContainer.insertAdjacentHTML(
+      'beforeend',
+      `
+      <button class="dots__dot" data-slide="${index}"></button>`
+    );
+  });
+};
+
+const activateDot = function (slide) {
+  const allDots = document.querySelectorAll('.dots__dot');
+  allDots.forEach(value => {
+    value.classList.remove('dots__dot--active');
+  });
+
+  document
+    .querySelector(`.dots__dot[data-slide="${slide}"]`)
+    .classList.add('dots__dot--active');
+};
 // Function that makes the slide go to the right slides
 const goToSlide = function (slide) {
   slides.forEach((value, index, arr) => {
@@ -189,22 +210,46 @@ const goToSlide = function (slide) {
   });
 };
 
-// This is to make sure the slides always start at the first slide
-goToSlide(0);
-
 const nextSlide = function () {
   if (currentSlide === maxSlide - 1) {
     currentSlide = 0;
   } else currentSlide++;
   goToSlide(currentSlide);
+  activateDot(currentSlide);
 };
+
 const prevSlide = function () {
   if (currentSlide > 0) {
     currentSlide--;
   }
   goToSlide(currentSlide);
+  activateDot(currentSlide);
 };
+// This is to make sure the slides always start at the first slide
+const init = function () {
+  goToSlide(0);
+  createDots();
+  activateDot(0);
+};
+
+init();
 
 // The event listener for the button right slider
 btnSliderRight.addEventListener('click', nextSlide);
 btnSliderLeft.addEventListener('click', prevSlide);
+
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'ArrowRight') nextSlide();
+  else if (e.key === 'ArrowLeft') prevSlide();
+});
+
+dotContainer.addEventListener('click', function (e) {
+  const clicked = e.target;
+  if (!clicked.classList.contains('dots__dot')) return;
+  const slide = Number(clicked.dataset.slide);
+  goToSlide(slide);
+  activateDot(slide);
+});
+
+// To make the slider move automatically every 3 seconds
+setInterval(nextSlide, 3000);
